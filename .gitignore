@@ -9,3 +9,4 @@ __pycache__/
 readme
 db.sqlite3
 media/
+products/

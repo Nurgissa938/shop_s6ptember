@@ -16,8 +16,12 @@ Including another URLconf
 """
 
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 
 urlpatterns = [
     path("admin/", admin.site.urls),
+    path('', include('main.urls', namespace='main')),
+    # namespace='main' - это позволяет нам использовать имена URL-адресов из приложения main в других местах нашего проекта, например, в шаблонах, без конфликтов с именами URL-адресов из других приложений.
+    # В данном случае мы включаем URL-адреса из приложения main.
+    # path('', include('main.urls')) - это говорит Django, что все URL-адреса, которые начинаются с '', должны быть обработаны URL-адресами из приложения main.
 ]
