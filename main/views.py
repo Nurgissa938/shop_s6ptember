@@ -1,5 +1,6 @@
 from django.shortcuts import render, get_object_or_404
 from . models import Category, Product
+from cart.forms import CartAddProductForm
 
 # идет перед тем как прописать urls, так как там мы будем использовать views
 # views - это функции, которые обрабатывают запросы от пользователей и возвращают ответы.
@@ -34,7 +35,8 @@ def product_detail(request, id, slug):
     related_products = Product.objects.filter(
         category=product.category, available=True).exclude(id=product.id)[:4]
     # ищет похожие товары в той же категории, исключая текущий товар, и ограничивает результат 4 товарами
+    cart_product_form = CartAddProductForm()
 
-    return render(request, 'main/products/detal.html', {'product': product, 'related_prosucts': related_products})
+    return render(request, 'main/products/detal.html', {'product': product, 'related_prosucts': related_products, 'cart_product_form': cart_product_form})
     # передает найденный товар и похожие товары в шаблон для отображения на странице.
     # если не прописать {'product':product, 'related_prosucts':related_products} - это контекст, то в шаблоне не будет доступа к этим переменным и мы не сможем отобразить информацию о товаре и похожих товарах.

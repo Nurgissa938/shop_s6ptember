@@ -18,10 +18,10 @@ class Cart:
     def add(self, product, quantity=1, override_quantity=False):
         product_id = str(product.id)
         # мы используем строку в качестве ключа, потому что сессия может не поддерживать использование чисел в качестве ключей.
-        if product.id not in self.cart:
+        if product_id not in self.cart:
             # если товар еще не добавлен в корзину, то мы создаем запись для него в словаре cart, где ключом будет product_id, а значением будет словарь с количеством и ценой товара.
             # мы сохраняем цену как строку, чтобы избежать проблем с сериализацией Decimal в JSON, который используется для хранения данных в сессии.
-            self.cart[product.id] = {
+            self.cart[product_id] = {
                 "quantity": 0, "price": str(product.price)}
         if override_quantity:
             self.cart[product_id]['quantity'] = quantity
@@ -43,13 +43,24 @@ class Cart:
     def __iter__(self):
         # Когда мы используем цикл for для перебора элементов в Cart, этот метод будет вызываться.
         product_ids = self.cart.keys()
-        # мы извлекаем из базы данных все продукты, которые находятся в корзине, используя их идентификаторы.
+        # мы извлекаем из базы данных все продукты, которые находятся в корзине, используя их идентификаторы. то есть это sql-запрос, который получает все объекты Product, у которых id совпадает с одним из id в корзине.
         products = Product.objects.filter(id__in=product_ids)
+        cart = self.cart.copy()
         for product in products:
             # мы добавляем к данным о товаре в корзине ссылку на сам объект Product, чтобы мы могли использовать его атрибуты (например, name, price) при отображении корзины.
             self.cart[str(product.id)]['product'] = product
 
         for item in self.cart.values():
-            item['price'] = Decimal(item['price'])
+            item['price'] = float(item['price'])
             item['total_price'] = item['price'] * item['quantity']
             yield item
+
+    def __len__(self):
+        return sum(item['quantity'] for item in self.cart.values())
+
+    def get_total_price(self):
+        return sum(float(item['price']) * item['quantity']for item in self.cart.values())
+
+    def clear(self):
+        del self.session[settings.CART_SESSION_ID]
+        self.save()
