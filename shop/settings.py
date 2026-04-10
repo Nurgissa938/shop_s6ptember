@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/6.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
-
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "main",
+    "cart",
 ]
 
 MIDDLEWARE = [
@@ -118,3 +119,12 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = "static/"
+STATIC_ROOT = os.path.join(BASE_DIR, "static")
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+
+# это идентификатор, который будет использоваться для хранения данных корзины в сессии пользователя.
+CART_SESSION_ID = 'cart'
+# Когда пользователь добавляет товар в корзину, данные о товаре будут сохраняться в сессии под этим идентификатором.
+# Это позволяет нам сохранять состояние корзины между запросами и даже между сессиями, если пользователь не удаляет свои куки.

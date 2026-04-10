@@ -1,4 +1,5 @@
 from django.db import models
+from django.urls import reverse
 
 # Create your models here.
 # модели - это классы, которые описывают структуру данных, которые мы будем хранить в нашей базе данных.
@@ -31,6 +32,11 @@ class Category(models.Model):
         # Он используется для отображения объектов в административной панели и других местах, где требуется строковое представление объекта.
         return self.name
 
+    def get_absolute_url(self):
+        # это метод, который возвращает URL-адрес для доступа к этому объекту.
+        # Он используется в шаблонах и других местах, где нужно создать ссылку на этот объект.
+        return reverse("main:product_list_by_category", args=[self.slug])
+
 
 class Product(models.Model):
     category = models.ForeignKey(
@@ -56,3 +62,6 @@ class Product(models.Model):
 
     def __str__(self):
         return self.name
+
+    def get_absolute_url(self):
+        return reverse("main:product_detail", args=[self.id, self.slug])
